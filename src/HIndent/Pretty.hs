@@ -472,15 +472,23 @@ exp (TupleSection _ boxed mexps) = do
 exp e@(InfixApp _ a op b) =
   infixApp e a op b Nothing
 -- | If bodies are indented 4 spaces. Handle also do-notation.
-exp (If _ if' then' else') =
-  do depend (write "if ")
-            (pretty if')
-     newline
-     indentSpaces <- getIndentSpaces
-     indented indentSpaces
-              (do branch "then " then'
-                  newline
-                  branch "else " else')
+exp (If _ if' then' else') = do
+  let oneline = do
+        depend (write "if ") (pretty if')
+        depend (write " then ") (pretty then')
+        depend (write " else ") (pretty else')
+      multiline = do
+        depend (write "if ")
+               (pretty if')
+        newline
+        indentSpaces <- getIndentSpaces
+        indented indentSpaces
+                 (do branch "then " then'
+                     newline
+                     branch "else " else')
+  mol <- fitsOnOneLine oneline
+  maybe multiline put mol
+
      -- Special handling for do.
   where branch str e =
           case e of
