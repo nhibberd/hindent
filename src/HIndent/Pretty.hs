@@ -752,9 +752,8 @@ decl (InstDecl _ moverlap dhead decls) =
                 indentedBlock (lined (map pretty (fromMaybe [] decls))))
 decl (SpliceDecl _ e) = pretty e
 decl (TypeSig _ names ty) =
-  depend (do inter (write ", ")
-                   (map pretty names)
-             write " :: ")
+  swing (do inter (write ", ") (map pretty names)
+            write " :: ")
          (pretty ty)
 decl (FunBind _ matches) =
   lined (map pretty matches)
@@ -1542,11 +1541,10 @@ decl' (TypeSig _ names ty') =
                           (declTy ty')
        Nothing -> do inter (write ", ")
                            (map pretty names)
+                     write " ::"
                      newline
                      indentSpaces <- getIndentSpaces
-                     indented indentSpaces
-                              (depend (write ":: ")
-                                      (declTy ty'))
+                     indented indentSpaces (depend (write "   ") (declTy ty'))
 
   where declTy dty =
           case dty of
