@@ -1266,7 +1266,30 @@ instance Pretty ModulePragma where
   prettyInternal = pretty'
 
 instance Pretty ImportDecl where
-  prettyInternal = pretty'
+  prettyInternal (ImportDecl _ m qual src safe mbPkg mbName mbSpecs) = do
+    write "import"
+    when src (write " {-# SOURCE #-}")
+    when safe (write " safe")
+    when qual (write " qualified")
+    when (not qual && not src && not safe && isNothing mbPkg) (write "          ")
+    maybe (pure ()) (\pk -> space *> write (show pk)) mbPkg
+    space
+    pretty' m
+    maybe (pure ()) (\n -> write " as " *> pretty n) mbName
+    maybe (pure ()) (\sp -> space *> pretty' sp) mbSpecs
+
+{-
+        pretty (ImportDecl _ m qual src safe mbPkg mbName mbSpecs) =
+                mySep [text "import",
+                       if src  then text "{-# SOURCE #-}" else empty,
+                       if safe then text "safe" else empty,
+                       if qual then text "qualified" else empty,
+                       maybePP (\s -> text (show s)) mbPkg,
+                       pretty m,
+                       maybePP (\m' -> text "as" <+> pretty m') mbName,
+                       maybePP pretty mbSpecs]
+-}
+
 
 instance Pretty ModuleName where
   prettyInternal (ModuleName _ name) =
