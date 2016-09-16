@@ -752,6 +752,7 @@ decl (InstDecl _ moverlap dhead decls) =
                 indentedBlock (lined (map pretty (fromMaybe [] decls))))
 decl (SpliceDecl _ e) = pretty e
 decl (TypeSig _ names ty) =
+  {- N.B. This is never called. See decl' -}
   swing (do inter (write ", ") (map pretty names)
             write " :: ")
          (pretty ty)
@@ -966,35 +967,24 @@ instance Pretty InstDecl where
       _ -> pretty' i
 
 instance Pretty Match where
-  prettyInternal = match
-    {-case x of
-      Match _ name pats rhs' mbinds ->
-        do depend (do pretty name
-                      space)
-                  (spaced (map pretty pats))
-           withCaseContext False (pretty rhs')
-           case mbinds of
-             Nothing -> return ()
-             Just binds ->
-               do newline
-                  indentedBlock (depend (write "where ")
-                                        (pretty binds))
-      InfixMatch _ pat1 name pats rhs' mbinds ->
-        do depend (do pretty pat1
-                      space
-                      case name of
-                        Ident _ i ->
-                          string ("`" ++ i ++ "`")
-                        Symbol _ s -> string s)
-                  (do space
-                      spaced (map pretty pats))
-           withCaseContext False (pretty rhs')
-           case mbinds of
-             Nothing -> return ()
-             Just binds ->
-               do newline
-                  indentedBlock (depend (write "where ")
-                                        (pretty binds))-}
+  prettyInternal x =
+    case x of
+      Match _ name pats rhs' mbinds -> do
+        pretty name
+        space
+        spaced (map pretty pats)
+        pretty rhs'
+        case mbinds of
+          Nothing -> return ()
+          Just binds ->
+            do newline
+               indentedBlock $ do
+                 write "where"
+                 newline
+                 -- TODO these binds should use fitsOnOneLine for RHS
+                 indentedBlock (pretty binds)
+
+      a -> pretty a -- infix declaration "a :+: b"
 
 instance Pretty PatField where
   prettyInternal x =
@@ -1355,15 +1345,10 @@ rhs (UnGuardedRhs _ (Do _ dos)) =
              (write "do")
              (lined (map pretty dos))
 rhs (UnGuardedRhs _ e) = do
-  msg <-
-    fitsOnOneLine
-      (do write " "
-          rhsSeparator
-          write " "
-          pretty e)
-  case msg of
-    Nothing -> swing (write " " >> rhsSeparator) (pretty e)
-    Just st -> put st
+  write " "
+  rhsSeparator
+  newline
+  indentedBlock (pretty e)
 rhs (GuardedRhss _ gas) =
   do newline
      n <- getIndentSpaces
@@ -1419,7 +1404,7 @@ guardedRhs (GuardedRhs _ stmts e) = do
                  stmts))
     swingIt = swing (write " " >> rhsSeparator) (pretty e)
 
-match :: Match NodeInfo -> Printer ()
+{-match :: Match NodeInfo -> Printer ()
 match (Match _ name pats rhs' mbinds) =
   do depend (do pretty name
                 space)
@@ -1437,6 +1422,7 @@ match (InfixMatch _ pat1 name pats rhs' mbinds) =
                 spaced (map pretty pats))
      withCaseContext False (pretty rhs')
      for_ mbinds bindingGroup
+-}
 
 -- | Format contexts with spaces and commas between class constraints.
 context :: Context NodeInfo -> Printer ()
