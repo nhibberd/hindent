@@ -1276,19 +1276,7 @@ instance Pretty ImportDecl where
     space
     pretty' m
     maybe (pure ()) (\n -> write " as " *> pretty n) mbName
-    maybe (pure ()) (\sp -> space *> pretty' sp) mbSpecs
-
-{-
-        pretty (ImportDecl _ m qual src safe mbPkg mbName mbSpecs) =
-                mySep [text "import",
-                       if src  then text "{-# SOURCE #-}" else empty,
-                       if safe then text "safe" else empty,
-                       if qual then text "qualified" else empty,
-                       maybePP (\s -> text (show s)) mbPkg,
-                       pretty m,
-                       maybePP (\m' -> text "as" <+> pretty m') mbName,
-                       maybePP pretty mbSpecs]
--}
+    maybe (pure ()) (depend space . pretty) mbSpecs
 
 
 instance Pretty ModuleName where
@@ -1296,7 +1284,11 @@ instance Pretty ModuleName where
     write name
 
 instance Pretty ImportSpecList where
-  prettyInternal = pretty'
+  prettyInternal (ImportSpecList _ b ispecs) = do
+    when b (write "hiding")
+    -- TODO list should wrap in batches
+    depend space . parens . commas . flip fmap ispecs $ \spec -> do
+      pretty spec
 
 instance Pretty ImportSpec where
   prettyInternal = pretty'
