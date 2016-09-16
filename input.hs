@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
-
 -- | A module comment. This module contains obnoxiously-formatted code from
 -- a variety of arbitrary locations. Cheers
 module Some.Module.Name (fun, Ty (..), name, abcde, module X) where
@@ -32,12 +31,11 @@ mkContext :: [(Var, Type)] -> Context
 mkContext = Context . M.fromList
 
 longTypeSig :: (MyConstraint a, YourConstraint b) => Def -> Ghi -> Jkl -> Abcdeoijoijoij -> Abcoiwjefiojwoeif -> Jklwejfiowejf -> Lowepfwpef
-longTypeSig abc (Def ghi jkl mno) = case x of undefined ->
-  unsafePerformIO $ undefined undefined undefined undefined undefined undefined undefined undefined undefined undefined
+longTypeSig abc (Def ghi jkl mno) = case x of
+   undefined -> unsafePerformIO $ undefined undefined undefined undefined undefined undefined undefined undefined undefined undefined
     where abcde :: Integer -> Integer -> Integer
           abcde = 55 55 55 55 55 55
           gumbus = aoij oijaw o foa wefi jawoeijf aoweijf oija wefoij aweofj awoef joija wefj aweofij awoiejf awoijef aowiejf aoiwejf
-
 
 -- | Pretty printing class.
 class (Annotated ast,Typeable ast) => Pretty ast where
@@ -88,4 +86,3 @@ pretty a = do
                 s
                 { psEolComment = True
                 })
-
