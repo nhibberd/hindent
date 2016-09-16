@@ -4,6 +4,8 @@
 -- a variety of arbitrary locations. Cheers
 module Some.Module.Name (fun, Ty (..), name, abcde, module X) where
 
+-- unqualified imports should be padded
+
 import AST
 
 import Control.Monad.Except
@@ -15,6 +17,7 @@ import P
 
 import qualified Prelude
 
+{- These ugly imports are not worth padding -}
 import {-# SOURCE #-} A (TA(..))
 import qualified "network" Network.Socket as NN
 import {-# SOURCE #-} safe qualified "network" Network.Socket as N (A, B, C)
@@ -23,12 +26,38 @@ import {-# SOURCE #-} safe qualified "network" Network.Socket as N (A, B, C)
 
 data TypeError = Mismatch Expr Type Type
                | UnknownType Var
+               | SomethingHappening Type Typical Typified Mulberries LongCon ConDecl WhatSayYou (WhatSay You Huh)
                | ExpectedFunction Expr Type Type deriving (Eq, Show)
 
 newtype Context = Context { unContext :: Map Var Type } deriving (Eq, Show)
 
 mkContext :: [(Var, Type)] -> Context
 mkContext = Context . M.fromList
+
+longSigLongType :: (MyConstraint a, YourConstraint b) => Type -> This Is A Long Type What Should Happen To It Really When You Think About It I Dunno Hey How About That -> Second Type -> Eight Type
+longSigLongType = undefined
+
+
+data Foo =
+    Foo Foo
+  | Bar Foo
+  | BazSnaffle
+      Foo
+      Bar
+      Baz
+      Int
+      Double
+      Double
+      [Double]
+  | Quux
+foo ::
+  Foo ->
+  Bar ->
+  Int ->
+  EitherT
+    (Foo Bar Baz)
+    IO
+    (Conduit Foo IO (Bar Baz Snaffle Quux))
 
 longTypeSig :: (MyConstraint a, YourConstraint b) => Def -> Ghi -> Jkl -> Abcdeoijoijoij -> Abcoiwjefiojwoeif -> Jklwejfiowejf -> Lowepfwpef
 longTypeSig abc (Def ghi jkl mno) = case x of

@@ -107,6 +107,10 @@ indentedBlock p =
 spaced :: [Printer ()] -> Printer ()
 spaced = inter space
 
+spacedWrap :: [Printer ()] -> Printer ()
+spacedWrap p =
+  ifFitsOnOneLineOrElse (spaced p) (lined p)
+
 -- | Print all the printers separated by commas.
 commas :: [Printer ()] -> Printer ()
 commas = inter (write ", ")
@@ -1630,9 +1634,7 @@ conDecl (RecDecl _ name fields) =
              write "}")
 conDecl x = case x of
               ConDecl _ name bangty ->
-                depend (do pretty name
-                           unless (null bangty) space)
-                       (lined (map pretty bangty))
+                swing (pretty name) (spacedWrap (map pretty bangty))
               InfixConDecl l a f b ->
                 pretty (ConDecl l f [a,b])
               RecDecl _ name fields ->
