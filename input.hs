@@ -34,7 +34,7 @@ newtype Context = Context { unContext :: Map Var Type } deriving (Eq, Show)
 mkContext :: [(Var, Type)] -> Context
 mkContext = Context . M.fromList
 
-longSigLongType :: (MyConstraint a, YourConstraint b) => Type -> This Is A Long Type What Should Happen To It Really When You Think About It I Dunno Hey How About That -> Second Type -> Eight Type
+longSigLongType :: (MyConstraint a, YourConstraint b) => Type -> This Is A Long Type (What Should Happen To It) Really When You (Think About) It I Dunno Hey (How About) That -> Second Type -> Eight Type
 longSigLongType = undefined
 
 
@@ -50,6 +50,7 @@ data Foo =
       Double
       [Double]
   | Quux
+
 foo ::
   Foo ->
   Bar ->
@@ -58,6 +59,8 @@ foo ::
     (Foo Bar Baz)
     IO
     (Conduit Foo IO (Bar Baz Snaffle Quux))
+
+
 
 longTypeSig :: (MyConstraint a, YourConstraint b) => Def -> Ghi -> Jkl -> Abcdeoijoijoij -> Abcoiwjefiojwoeif -> Jklwejfiowejf -> Lowepfwpef
 longTypeSig abc (Def ghi jkl mno) = case x of

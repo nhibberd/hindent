@@ -1499,7 +1499,8 @@ typ x = case x of
             brackets (do write ":"
                          pretty t
                          write ":")
-          TyApp _ f a -> spaced [pretty f,pretty a]
+          a@(TyApp _ (TyApp _ _ _) _) -> linedTyApp a
+          TyApp _ f a -> spaced [pretty f, pretty a]
           TyVar _ n -> pretty n
           TyCon _ p -> pretty p
           TyParen _ e -> parens (pretty e)
@@ -1534,6 +1535,21 @@ typ x = case x of
                                  write "|")
                              (do string s
                                  write "|"))
+
+linedTyApp :: Type NodeInfo -> Printer ()
+linedTyApp a =
+  case typeList a of
+    [] -> pretty a
+    ls@(x:xs) ->
+      ifFitsOnOneLineOrElse
+        (spaced (fmap pretty ls))
+        (swing (pretty x) ((spacedWrap (fmap pretty xs))))
+
+typeList :: Type NodeInfo -> [Type NodeInfo]
+typeList x = case x of
+  TyApp _ a@(TyCon _ _) b -> a : typeList b
+  TyApp _ a@(TyApp _ _ _) b -> typeList a <> typeList b
+  y -> [y]
 
 -- | Specially format records. Indent where clauses only 2 spaces.
 decl' :: Decl NodeInfo -> Printer ()
