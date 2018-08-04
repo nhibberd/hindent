@@ -1101,7 +1101,7 @@ instance Pretty Module where
                               if isNull
                                  then Nothing
                                  else Just r)
-                           [(null pragmas,inter newline (map pretty pragmas))
+                           [(null pragmas, inter newline (map pretty pragmas))
                            ,(case mayModHead of
                                Nothing -> (True,return ())
                                Just modHead -> (False,pretty modHead))
@@ -1261,8 +1261,10 @@ instance Pretty ModuleHead where
        maybe (return ()) pretty mwarnings
        maybe (return ())
              (\exports ->
-                do newline
-                   indented 2 (pretty exports))
+                do
+                  write " ("
+                  newline
+                  indented 2 (pretty exports))
              mexports
        write " where"
 
@@ -1305,7 +1307,7 @@ instance Pretty WarningText where
 
 instance Pretty ExportSpecList where
   prettyInternal (ExportSpecList _ es) = do
-    depend (write "(")
+    depend (write " ")
            (prefixedLined "," (map pretty es))
     newline
     write ")"

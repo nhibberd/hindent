@@ -2,7 +2,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 -- | A module comment. This module contains obnoxiously-formatted code from
 -- a variety of arbitrary locations. Cheers
-module Some.Module.Name (fun, Ty (..), name, abcde, module X) where
+module Some.Module.Name (fun, Ty (..), name, abcde, module X, F.bar) where
 
 -- unqualified imports should be padded
 
