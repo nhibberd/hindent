@@ -47,6 +47,8 @@ data Baz
     | Blahfoo
       deriving Eq
 
+data Car = Car
+
 {--
 newtype Thing =ss Thing
   { fromThing :: Text

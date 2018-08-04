@@ -817,20 +817,21 @@ declx (DataDecl _ dataornew ctx dhead condecls mderivs) =
        Nothing -> return ()
        Just derivs ->
          do newline
-            column indentSpaces (pretty derivs)
+            column (indentSpaces + indentSpaces) (pretty derivs)
   where singleCons x =
           do write " ="
              indentSpaces <- getIndentSpaces
              column indentSpaces
                     (do newline
                         pretty x)
-        multiCons xs =
-          do newline
-             indentSpaces <- getIndentSpaces
-             column indentSpaces
-                    (depend (write "=")
-                            (prefixedLined "|"
-                                           (map (depend space . pretty) xs)))
+        multiCons xs = do
+          write " ="
+          newline
+          indentSpaces <- getIndentSpaces
+          column indentSpaces
+            (depend
+               (write " ")
+               (prefixedLined "|" (map (depend space . pretty) xs)))
 
 declx (InlineSig _ inline active name) = do
   write "{-# "
