@@ -122,7 +122,7 @@ options config = ver *> ((,,) <$> style <*> exts <*> file)
       fmap
         (>>= (readMaybe . T.unpack))
         (optional
-           (arg "indent-size" "Indentation size in spaces, default: 4" <|>
+           (arg "indent-size" "Indentation size in spaces, default: 2" <|>
             arg "tab-size" "Same as --indent-size, for compatibility"))
     lineLen =
       fmap
