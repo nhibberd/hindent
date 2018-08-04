@@ -22,6 +22,11 @@ import {-# SOURCE #-} A (TA(..))
 import qualified "network" Network.Socket as NN
 import {-# SOURCE #-} safe qualified "network" Network.Socket as N (A, B, C)
 
+foo :: Bool
+foo =
+  if aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa then foo else
+    baz
+
 
 
 data TypeError = Mismatch Expr Type Type

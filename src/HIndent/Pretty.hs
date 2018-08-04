@@ -482,29 +482,29 @@ exp (If _ if' then' else') = do
         depend (write " then ") (pretty then')
         depend (write " else ") (pretty else')
       multiline = do
-        depend (write "if ")
-               (pretty if')
+        depend (write "if ") (pretty if')
+        branch " then" then'
         newline
-        indentSpaces <- getIndentSpaces
-        indented indentSpaces
-                 (do branch "then " then'
-                     newline
-                     branch "else " else')
+        branch "else" else'
   mol <- fitsOnOneLine oneline
   maybe multiline put mol
 
      -- Special handling for do.
-  where branch str e =
-          case e of
+  where
+      branch str e =
+        case e of
             Do _ stmts ->
               do write str
-                 write "do"
+                 write " do"
                  newline
                  indentSpaces <- getIndentSpaces
                  indented indentSpaces (lined (map pretty stmts))
-            _ ->
-              depend (write str)
-                     (pretty e)
+            _ -> do
+              write str
+              newline
+              indentSpaces <- getIndentSpaces
+              indented indentSpaces (pretty e)
+
 -- | Render on one line, or otherwise render the op with the arguments
 -- listed line by line.
 exp (App _ op arg) = do
