@@ -28,6 +28,50 @@ foo =
     baz
 
 
+thing :: Read Thing
+thing = Read.bounded thing
+
+newtype Thing = Thing { fromThing :: Text }
+    deriving (Show, Read, Eq, ToJSON)
+
+data Config =
+  Config {
+      configA :: A
+    , bonfigB :: B
+    } deriving (Eq, Show)
+
+
+data Baz
+    = Foo
+    | Woah
+    | Blahfoo
+      deriving Eq
+
+{--
+newtype Thing =ss Thing
+  { fromThing :: Text
+  } deriving (Show, Read, Eq, ToJSON)
+
+data Config =ss Config
+  { configA :: A
+  , bonfigB :: B
+  } deriving (Eq, Show)
+
+data Baz
+  = Foo
+  | Woah
+  | Blahfoo
+  deriving (Eq)
+--}
+
+class A a where
+    aaa :: proxy a -> Baz
+
+instance A Foo     where aaa = const Foo
+instance A Woah    where aaa = const Woah
+instance A Blahfoo where aaa = const Woah
+
+
 
 data TypeError = Mismatch Expr Type Type
                | UnknownType Var

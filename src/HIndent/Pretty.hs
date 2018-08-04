@@ -743,8 +743,8 @@ instance Pretty Decl where
   prettyInternal = decl'
 
 -- | Render a declaration.
-decl ::  Decl NodeInfo -> Printer ()
-decl (PatBind _ pat rhs' mbinds) =
+declx :: Decl NodeInfo -> Printer ()
+declx (PatBind _ pat rhs' mbinds) =
   do pretty pat
      withCaseContext False (pretty rhs')
      case mbinds of
@@ -753,7 +753,7 @@ decl (PatBind _ pat rhs' mbinds) =
          do newline
             indentedBlock (depend (write "where ")
                                   (pretty binds))
-decl (InstDecl _ moverlap dhead decls) =
+declx (InstDecl _ moverlap dhead decls) =
   do depend (write "instance ")
             (depend (maybeOverlap moverlap)
                     (depend (pretty dhead)
@@ -762,15 +762,15 @@ decl (InstDecl _ moverlap dhead decls) =
      unless (null (fromMaybe [] decls))
             (do newline
                 indentedBlock (lined (map pretty (fromMaybe [] decls))))
-decl (SpliceDecl _ e) = pretty e
-decl (TypeSig _ names ty) =
+declx (SpliceDecl _ e) = pretty e
+declx (TypeSig _ names ty) =
   {- N.B. This is never called. See decl' -}
   swing (do inter (write ", ") (map pretty names)
             write " :: ")
          (pretty ty)
-decl (FunBind _ matches) =
+declx (FunBind _ matches) =
   lined (map pretty matches)
-decl (ClassDecl _ ctx dhead fundeps decls) =
+declx (ClassDecl _ ctx dhead fundeps decls) =
   do depend (write "class ")
             (withCtx ctx
                      (depend (do pretty dhead)
@@ -782,13 +782,13 @@ decl (ClassDecl _ ctx dhead fundeps decls) =
      unless (null (fromMaybe [] decls))
             (do newline
                 indentedBlock (lined (map pretty (fromMaybe [] decls))))
-decl (TypeDecl _ typehead typ') =
+declx (TypeDecl _ typehead typ') =
   depend (write "type ")
          (depend (pretty typehead)
                  (depend (write " = ")
                          (pretty typ')))
 
-decl (TypeFamDecl _ declhead result injectivity) = do
+declx (TypeFamDecl _ declhead result injectivity) = do
   write "type family "
   pretty declhead
   case result of
@@ -803,7 +803,7 @@ decl (TypeFamDecl _ declhead result injectivity) = do
       space
       pretty i
     Nothing -> return ()
-decl (DataDecl _ dataornew ctx dhead condecls mderivs) =
+declx (DataDecl _ dataornew ctx dhead condecls mderivs) =
   do depend (do pretty dataornew
                 space)
             (withCtx ctx
@@ -832,7 +832,7 @@ decl (DataDecl _ dataornew ctx dhead condecls mderivs) =
                             (prefixedLined "|"
                                            (map (depend space . pretty) xs)))
 
-decl (InlineSig _ inline active name) = do
+declx (InlineSig _ inline active name) = do
   write "{-# "
 
   unless inline $ write "NO"
@@ -844,7 +844,7 @@ decl (InlineSig _ inline active name) = do
   pretty name
 
   write " #-}"
-decl x' = pretty' x'
+declx x' = pretty' x'
 
 instance Pretty Deriving where
   prettyInternal (Deriving _ heads) =
@@ -1616,19 +1616,29 @@ decl' (PatBind _ pat rhs' mbinds) =
 -- | Handle records specially for a prettier display (see guide).
 decl' (DataDecl _ dataornew ctx dhead condecls@[_] mderivs)
   | any isRecord condecls =
-    do depend (do pretty dataornew
-                  unless (null condecls) space)
-              (withCtx ctx
-                       (do pretty dhead
-                           multiCons condecls))
-       case mderivs of
-         Nothing -> return ()
-         Just derivs -> space >> pretty derivs
-  where multiCons xs =
-          depend (write " =")
-                 (inter (write "|")
-                        (map (depend space . qualConDecl) xs))
-decl' e = decl e
+    do
+      depend
+        (do
+           pretty dataornew
+           unless (null condecls) space)
+        (withCtx ctx (do
+          pretty dhead
+          multiCons condecls))
+      case mderivs of
+        Nothing ->
+          return ()
+        Just derivs ->
+          space >> pretty derivs
+  where
+    -- this is only data types with records. :?
+    multiCons [] =
+      write "TODO lol"
+    multiCons (x : _) =
+      depend
+        (write " =ss")
+        (qualConDecl x)
+--        (inter (write "what|") (map (depend space . qualConDecl) xs))
+decl' e = declx e
 
 -- | Use special record display, used by 'dataDecl' in a record scenario.
 qualConDecl :: QualConDecl NodeInfo -> Printer ()
@@ -1668,11 +1678,13 @@ conDecl x = case x of
 -- }
 recDecl :: ConDecl NodeInfo -> Printer ()
 recDecl (RecDecl _ name fields) =
-  do pretty name
+  do
      indentSpaces <- getIndentSpaces
      newline
-     column indentSpaces
-            (do depend (write "{")
+     column indentSpaces $ depend (pretty name) (write " {")
+     newline
+     column (indentSpaces + indentSpaces)
+            (do depend (write " ")
                        (prefixedLined ","
                                       (map (depend space . pretty) fields))
                 newline
