@@ -1634,7 +1634,7 @@ decl' (DataDecl _ dataornew ctx dhead condecls@[_] mderivs)
     multiCons xs =
       depend
         (write " =")
-        (inter (write "what|") (map (depend space . qualConDecl) xs))
+        (inter (write "|") (map (depend space . qualConDecl) xs))
 decl' e = declx e
 
 -- | Use special record display, used by 'dataDecl' in a record scenario.
