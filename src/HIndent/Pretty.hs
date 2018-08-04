@@ -1631,13 +1631,10 @@ decl' (DataDecl _ dataornew ctx dhead condecls@[_] mderivs)
           space >> pretty derivs
   where
     -- this is only data types with records. :?
-    multiCons [] =
-      write "TODO lol"
-    multiCons (x : _) =
+    multiCons xs =
       depend
-        (write " =ss")
-        (qualConDecl x)
---        (inter (write "what|") (map (depend space . qualConDecl) xs))
+        (write " =")
+        (inter (write "what|") (map (depend space . qualConDecl) xs))
 decl' e = declx e
 
 -- | Use special record display, used by 'dataDecl' in a record scenario.
